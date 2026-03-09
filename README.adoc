@@ -1,0 +1,15 @@
+= Kakoune MindMap
+
+A Kakoune plugin/extension thing for managing a Zettelkasten / personal wiki / notes.
+
+I plan to write this following the methodologies and philosophies outlined here: https://zettelkasten.de/introduction/[Introduction to the Zettelkasten Method]
+
+If you stumble upon this and feel inclined to, feel free to submit a PR.
+
+Also, softwrapping is recommended:
+
+[source, kakscript]
+----
+add-highlighter global/ wrap -word -indent
+----
+

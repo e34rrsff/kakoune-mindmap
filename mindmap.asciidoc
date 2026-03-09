@@ -1,0 +1,23 @@
+= Kakoune MindMap
+
+I just whipped up a single command, so I don't have much to write about this plugin at this point.
+
+== Options
+
+These options are accessible from this thing -> %opt{}. (Insert the option name in the brackets)
+
+*mindmap_dir*
+
+When Kakoune is launched, the plugin will recursively check the current directory and then cd upwards until a file named ".kakmindmap" is found. This directory is where new notes will be made.
+
+*mindmap_newnote_namer*
+
+A shell command of which the output will be used as the file name--before having the .adoc extension appended. The default is "date +%s", which returns UNIX time.
+
+== Commands
+
+The only command available as of now is: mindmap-note-new
+
+*mindmap-note-new*
+
+Quickly opens up a new buffer for a new note. If you want, specify a custom file name.
