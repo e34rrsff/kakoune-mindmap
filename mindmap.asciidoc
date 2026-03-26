@@ -1,23 +1,33 @@
 = Kakoune MindMap
 
-I just whipped up a single command, so I don't have much to write about this plugin at this point.
+To use this... TODO
 
 == Options
 
 These options are accessible from this thing -> %opt{}. (Insert the option name in the brackets)
 
-*mindmap_dir*
+=== mindmap_dir
 
-When Kakoune is launched, the plugin will recursively check the current directory and then cd upwards until a file named ".kakmindmap" is found. This directory is where new notes will be made.
+This should be set to a directory that contains a file named ".kakmindmap". Commands will use it as the location for managing notes. A hook is set to automatically detect and set it for you on opening buffers with files ending in .adoc/.asciidoc. You can also define the environment variable KAK_MINDMAP_DIR in your shell to set a default location for managing notes.
 
-*mindmap_newnote_namer*
+=== mindmap_newnote_extension
 
-A shell command of which the output will be used as the file name--before having the .adoc extension appended. The default is "date +%s", which returns UNIX time.
+Pretty self-explanatory. Default is ".adoc".
+
+=== mindmap_newnote_namer
+
+A shell command of which the output will be used as the file name (before having <<mindmap_newnote_extension,mindmap_newnote_extension>> appended). The default is "date +%s", which returns UNIX time.
 
 == Commands
 
-The only command available as of now is: mindmap-note-new
+=== mindmap-dir-detect
 
-*mindmap-note-new*
+Looks for the '.kakmindmap' file in the same directory as the current file you have open. Sets %opt{mindmap_dir} to the same directory if it is found.
 
-Quickly opens up a new buffer for a new note. If you want, specify a custom file name.
+mindmap-note-new
+
+Quickly opens up a new buffer for a new note. If you want, specify a custom file name (without the extension).
+
+mindmap-nav-next
+
+mindmap-nav-previous

@@ -1,11 +1,11 @@
 = Ideas for this Project
 
-Currently, I am thinking about implementing these features:
-
 * [x] Quick note creation
 ** [x] Support for different file naming schemes
-** [ ] Different file format support (meh, I'll probably only use AsciiDoc)
-* [ ] Opening notes with autocompletion by document title
-+
-// This requires more effort when dealing with something like MarkDown
-* [ ] Subdirectory support (although I'm not sure if I would want this feature)
+* [ ] Quickly moving between notes
+** [ ] Switching between previous and next notes in alphanumeric order
+** [X] A buffer of a list of notes
+*** [ ] Fast shortcut / hitting enter to open note(s) under cursor(s)
+* [ ] Trashing
+** [ ] Trash in local notes directory
+** [ ] Trash to user's home trash
