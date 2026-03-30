@@ -5,6 +5,7 @@
 * [ ] Quickly moving between notes
 ** [ ] Switching between previous and next notes in alphanumeric order
 ** [X] A buffer of a list of notes
+*** [ ] Sort notes by date
 *** [ ] Fast shortcut / hitting enter to open note(s) under cursor(s)
 * [ ] Quick notes deletion (with confirmation)
 * [ ] Trashing

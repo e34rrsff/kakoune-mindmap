@@ -1,30 +1,28 @@
 declare-option -docstring %{
-    The location to look for mindmap notes.
-} str mindmap_dir
-
-declare-option -docstring %{
     A shell command which will be executed to generate a new note's file name
-    prefix. The default is "date +%%s".
+    prefix. The default is "date +%s".
 } str mindmap_newnote_namer
 
-declare-option -docstring %{
-    File extension for new notes.
+declare-option -hidden str mindmap_dir
+
+declare-option -hidden -docstring %{
+    File extension for new notes. I will keep this hidden for now, until I add
+    support other file formats, if that even happens.
 } str mindmap_newnote_extension
 
-declare-option -hidden str mindmap_perlscript_path %sh{
-    printf "${kak_source%/*}/mindmap.perl"
+declare-option -hidden str mindmap_perlscripts_path %sh{
+    printf "${kak_source%/*}/perl_scripts"
 }
 
-define-command mindmap-detect -params 0 -docstring %{
-    Checks if the current file open in the buffer is in a MindMap notes
-    directory and sets %opt{mindmap_dir} to the directory it is contained in.
-} %{ evaluate-commands %sh{
-    mindmap_dir_marker_filename=".kakmindmap"
-    if [ -e "$PWD/$mindmap_dir_marker_filename" ]; then
-        printf "set-option global mindmap_dir \"$PWD\""
-    else
-        printf "fail \"$PWD is not a MindMap directory\""
-    fi
+define-command -hidden mindmap-detect -params 0 %{
+    evaluate-commands %sh{
+        mindmap_dir_marker_filename=".kakmindmap"
+        current_buf_dir="${kak_buffile%/*}"
+        if [ -e "$current_buf_dir/$mindmap_dir_marker_filename" ]; then
+            printf "set-option global mindmap_dir \"$current_buf_dir\""
+        else
+            printf "fail \"$current_buf_dir is not a MindMap directory\""
+        fi
 }}
 
 define-command mindmap-new-note -params ..1 -docstring %{
@@ -56,7 +54,7 @@ define-command mindmap-new-note -params ..1 -docstring %{
 
 define-command mindmap-list -params 0 -docstring %{
     Open a list of your notes at %opt{mindmap_dir}
-} %{ evaluate-commands -save-regs 'm' %{
+} %{ evaluate-commands -save-regs 'f' %{
 
   try %{ delete-buffer *mindmap-list* }
 
@@ -64,17 +62,24 @@ define-command mindmap-list -params 0 -docstring %{
     fifo="$(mktemp -u)"
     mkfifo "$fifo"
 
-    perl_script="$kak_opt_mindmap_perlscript_path"
+    perl_script="$kak_opt_mindmap_perlscripts_path/list.perl"
     # I'll be honest, I don't yet understand why the fifo file requires these redirects
     (env perl "$perl_script" "$kak_opt_mindmap_dir" > "$fifo") < /dev/null > /dev/null 2>&1 &
-    printf "set-register m '%s'" "$fifo"
+    printf "set-register f '%s'" "$fifo"
   }
 
-  edit -fifo %reg{m} -readonly *mindmap-list*
+  edit -fifo %reg{f} -readonly *mindmap-list*
 
-  nop %sh{ rm "$kak_reg_m" }
-  set-register 'm'
+  # TODO: replace full file paths with just the note's unique ID
+  map buffer normal <ret> "gh<a-E>""fy:mindmap-list-opennote<ret>"
+
+  nop %sh{ rm "$kak_reg_f" }
+  set-register 'f'
 }}
+
+define-command -hidden mindmap-list-opennote %{
+  edit -existing %reg{f}
+}
 
 set-option global mindmap_dir %sh{printf "$KAK_MINDMAP_DIR"}
 set-option global mindmap_newnote_namer 'date +%s'

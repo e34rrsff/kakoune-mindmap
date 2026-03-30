@@ -1,33 +1,35 @@
 = Kakoune MindMap
 
-To use this... TODO
+To use this plugin, "export" an environment variable available to your shell named `KAK_MINDMAP_DIR` and set it to some directory you like (i.e. ~/Documents/Notes) (and make sure it exists). 
+
+Notes will be searched for under `KAK_MINDMAP_DIR`, _flatly_ (no subdirectories will be checked). 
+
+For any file you open, a hook checks to see if the directory the file is contained in contains another file named `.kakmindmap`. This is so that if you want other notes directories outside of `KAK_MINDMAP_DIR`, you can have them sourced without manually updating the environment variable or Kakoune option. Just create the .kakmindmap file in them.
+
+Use <<mindmap-new-note,mindmap-new-note>> for creating a note and <<mindmap-list,mindmap-list>> to quickly search and open other notes.
 
 == Options
 
-These options are accessible from this thing -> %opt{}. (Insert the option name in the brackets)
+These are accessible as options in Kakoune. (`%opt{<option_name_here>}`)
 
 === mindmap_dir
 
-This should be set to a directory that contains a file named ".kakmindmap". Commands will use it as the location for managing notes. A hook is set to automatically detect and set it for you on opening buffers with files ending in .adoc/.asciidoc. You can also define the environment variable KAK_MINDMAP_DIR in your shell to set a default location for managing notes.
+`KAK_MINDMAP_DIR` is used to set this variable; it is equivalent to what you've set that to.
 
 === mindmap_newnote_extension
 
-Pretty self-explanatory. Default is ".adoc".
+This one is pretty self-explanatory. The default is ".adoc". You could change this, but currently the plugin only looks for titles from AsciiDoc formatted files.
 
 === mindmap_newnote_namer
 
-A shell command of which the output will be used as the file name (before having <<mindmap_newnote_extension,mindmap_newnote_extension>> appended). The default is "date +%s", which returns UNIX time.
+A shell command; of which, the output will be used as the file name (before having <<mindmap_newnote_extension,mindmap_newnote_extension>> appended). The default is "date +%s", which returns the current UNIX time. Any custom command should return a string that will be unique to new notes.
 
 == Commands
 
-=== mindmap-dir-detect
+=== mindmap-list
 
-Looks for the '.kakmindmap' file in the same directory as the current file you have open. Sets %opt{mindmap_dir} to the same directory if it is found.
+Creates a new buffer named `\*mindmap-list\*` which contains a list of `.adoc`/`.asciidoc` files and their titles, sourced from <<mindmap_dir,mindmap_dir>>. The file path on the same line as your cursor is on will open if you hit <ret>.
 
-mindmap-note-new
+=== mindmap-new-note
 
-Quickly opens up a new buffer for a new note. If you want, specify a custom file name (without the extension).
-
-mindmap-nav-next
-
-mindmap-nav-previous
+Quickly opens up a new buffer for a new note. If you want, specify a custom file name to override <<mindmap_newnote_namer,mindmap_newnote_namer>> (without the extension).
