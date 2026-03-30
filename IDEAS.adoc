@@ -6,6 +6,7 @@
 ** [ ] Switching between previous and next notes in alphanumeric order
 ** [X] A buffer of a list of notes
 *** [ ] Fast shortcut / hitting enter to open note(s) under cursor(s)
+* [ ] Quick notes deletion (with confirmation)
 * [ ] Trashing
 ** [ ] Trash in local notes directory
 ** [ ] Trash to user's home trash
