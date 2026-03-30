@@ -7,7 +7,7 @@
 ** [X] A buffer of a list of notes
 *** [ ] Sort notes by date
 *** [ ] Fast shortcut / hitting enter to open note(s) under cursor(s)
-* [ ] Quick notes deletion (with confirmation)
 * [ ] Trashing
+** [ ] Quick notes deletion (with confirmation)
 ** [ ] Trash in local notes directory
 ** [ ] Trash to user's home trash
