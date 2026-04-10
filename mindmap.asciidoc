@@ -6,7 +6,7 @@ Notes will be searched for under `KAK_MINDMAP_DIR`, _flatly_ (no subdirectories 
 
 For any file you open, a hook checks to see if the directory the file is contained in contains another file named `.kakmindmap`. This is so that if you want other notes directories outside of `KAK_MINDMAP_DIR`, you can have them sourced without manually updating the environment variable or Kakoune option. Just create the .kakmindmap file in them.
 
-Use <<mindmap-new-note,mindmap-new-note>> for creating a note and <<mindmap-list,mindmap-list>> to quickly search and open other notes.
+Use <<mindmap-new-note,mindmap-new-note>> to quickly create a new note and <<mindmap-list,mindmap-list>> to go through a listing of your available notes.
 
 == Options
 
@@ -16,19 +16,15 @@ These are accessible as options in Kakoune. (`%opt{<option_name_here>}`)
 
 `KAK_MINDMAP_DIR` is used to set this variable; it is equivalent to what you've set that to.
 
-=== mindmap_newnote_extension
-
-This one is pretty self-explanatory. The default is ".adoc". You could change this, but currently the plugin only looks for titles from AsciiDoc formatted files.
-
 === mindmap_newnote_namer
 
-A shell command; of which, the output will be used as the file name (before having <<mindmap_newnote_extension,mindmap_newnote_extension>> appended). The default is "date +%s", which returns the current UNIX time. Any custom command should return a string that will be unique to new notes.
+A shell command; of which, the output will be used as the file ID (before having `.adoc` appended). The default is "date +%s", which returns the current UNIX time. Any custom command should return a string that will be unique to new notes.
 
 == Commands
 
 === mindmap-list
 
-Creates a new buffer named `\*mindmap-list\*` which contains a list of `.adoc`/`.asciidoc` files and their titles, sourced from <<mindmap_dir,mindmap_dir>>. The file path on the same line as your cursor is on will open if you hit <ret>.
+Creates a new buffer named `\*mindmap-list\*` which contains a list of `.adoc`/`.asciidoc` files and their titles, sourced from <<mindmap_dir,mindmap_dir>>. Any files on the same line as your cursor(s) will be opened like: `:edit <file_id>.adoc`, if you hit <ret>.
 
 === mindmap-new-note
 

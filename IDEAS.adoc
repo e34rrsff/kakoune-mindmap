@@ -3,10 +3,10 @@
 * [x] Quick note creation
 ** [x] Support for different file naming schemes
 * [ ] Quickly moving between notes
-** [ ] Switching between previous and next notes in alphanumeric order
+** [ ] Usable inline hyperlinks
 ** [X] A buffer of a list of notes
-*** [ ] Sort notes by date
-*** [ ] Fast shortcut / hitting enter to open note(s) under cursor(s)
+*** [X] Sort notes
+*** [X] Fast shortcut / hitting enter to open note(s) under cursor(s)
 * [ ] Trashing
 ** [ ] Quick notes deletion (with confirmation)
 ** [ ] Trash in local notes directory
