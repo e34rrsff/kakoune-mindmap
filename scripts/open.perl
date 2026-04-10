@@ -14,11 +14,11 @@ exit 0 unless defined $input;
 
 my @fields = split(/\/\n/, $input);
 for my $file (@fields) {
-    if (-T "$ENV{'kak_mindmap_dir'}/" . $file . ".adoc") {
-        print "edit \"$ENV{'kak_mindmap_dir'}/$file.adoc\"\n";
+    if (-T "$ENV{'kak_opt_mindmap_dir'}/" . $file . ".adoc") {
+        print "edit \"$ENV{'kak_opt_mindmap_dir'}/$file.adoc\"\n";
     }
     else {
-        print "fail \"$ENV{'kak_mindmap_dir'}/$file.adoc: $!\"\n";
+        print "fail \"$ENV{'kak_opt_mindmap_dir'}/$file.adoc: $!\"\n";
     }
 }
 

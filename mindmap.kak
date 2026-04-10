@@ -78,6 +78,7 @@ define-command -hidden mindmap-open %{
         execute-keys 'xs^(?S).*/<ret>'
         evaluate-commands %sh{
             perl_script="$kak_opt_mindmap_scripts_path/open.perl"
+            export kak_opt_mindmap_dir
             eval set -- "$kak_quoted_selections"
             while [ $# -gt 0 ]; do
                 printf "$1\n"
