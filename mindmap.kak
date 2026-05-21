@@ -41,12 +41,6 @@ define-command -docstring %{
 hook global BufOpenFile .*\.a(scii)?doc mindmap-detect
 hook global BufNewFile .*\.a(scii)?doc mindmap-detect
 
-define-command -hidden -docstring %{
-    creates the directory for a new note
-} mindmap-new-note-mkdir %{ nop %sh{
-    mkdir -p "$kak_opt_mindmap_dir/$(eval $kak_opt_mindmap_new_note_dir_cmd)"
-}}
-
 define-command -docstring %{
     creates a new note
 } mindmap-new-note %{ evaluate-commands %sh{
@@ -62,7 +56,12 @@ define-command -docstring %{
     fi
 }}
 
-# TODO: rest of file and perl scripts
+define-command -hidden -docstring %{
+    creates the directory for a new note
+} mindmap-new-note-mkdir %{ nop %sh{
+    mkdir -p "$kak_opt_mindmap_dir/$(eval $kak_opt_mindmap_new_note_dir_cmd)"
+}}
+
 define-command mindmap-list -docstring %{
     creates a buffer that lists all the notes under the current mindmap notes
     directory
@@ -86,7 +85,10 @@ define-command mindmap-list -docstring %{
     map buffer normal <ret> ':mindmap-open<ret>'
 }}
 
-define-command -hidden mindmap-open %{
+define-command -hidden -docstring %{
+    opens selected file entries in a *mindmap-list* buffer
+    buffer
+} mindmap-open %{
     evaluate-commands %{
         execute-keys 'xs^(?S).*/<ret>'
         evaluate-commands %sh{
