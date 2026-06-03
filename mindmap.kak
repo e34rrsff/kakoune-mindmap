@@ -10,17 +10,20 @@ declare-option -docstring %{
     [ -d "$KAK_MINDMAP_DIR" ] && printf "$KAK_MINDMAP_DIR"
 }
 
-declare-option -hidden -docstring %{
-    command that supplies a valid directory path schema for new notes
-} str mindmap_new_note_dir_cmd 'date "+%Y/%b/%d"'
+declare-option -docstring %{
+    `date` command format string that supplies a valid directory path schema
+    for new notes
+} str mindmap_dir_schema_cmd 'date +%Y/%b/%d'
 
-declare-option -hidden -docstring %{
-    command that supplies a valid filename schema for new notes
-} str mindmap_new_note_filename_cmd 'date "+%I_%M_%S.adoc"'
+declare-option -docstring %{
+    your preferred file format/extension for your notes
+} str mindmap_new_note_fmt 'md'
+
+### Simple commands ###
 
 define-command -docstring %{
-    sets %opt{mindmap_dir} if the current buffer is of a file within a mindmap
-    directory and also echoes the detected directory
+    sets the mindmap_dir option if the current buffer is of a file within a
+    MindMap directory and also echoes out the path
 } mindmap-detect %{
     evaluate-commands %sh{
         mindmap_dir_indicator_filename=".kakmindmap"
@@ -35,17 +38,20 @@ define-command -docstring %{
                 cd ..
             fi
         done
-        printf "fail \"$kak_buffile\" is not within a mindmap directory"
+        printf "fail \"$kak_buffile\" is not within a MindMap directory"
 }}
 
 hook global BufOpenFile .*\.a(scii)?doc mindmap-detect
 hook global BufNewFile .*\.a(scii)?doc mindmap-detect
+hook global BufOpenFile .*\.md mindmap-detect
+hook global BufNewFile .*\.md mindmap-detect
 
 define-command -docstring %{
     creates a new note
 } mindmap-new-note %{ evaluate-commands %sh{
-    new_note_dir="$(eval $kak_opt_mindmap_new_note_dir_cmd)"
-    new_note_filename="$(eval $kak_opt_mindmap_new_note_filename_cmd)"
+    new_note_dir="$(eval $kak_opt_mindmap_dir_schema_cmd)"
+    # hardcoded note ID format
+    new_note_filename="$(eval date +%s).$kak_opt_mindmap_new_note_fmt"
 
     if [ -e "$new_note_dir/$new_note_filename" ]; then
         printf "fail '$new_note_filename already exists'"
@@ -59,23 +65,27 @@ define-command -docstring %{
 define-command -hidden -docstring %{
     creates the directory for a new note
 } mindmap-new-note-mkdir %{ nop %sh{
-    mkdir -p "$kak_opt_mindmap_dir/$(eval $kak_opt_mindmap_new_note_dir_cmd)"
+    mkdir -p "$kak_opt_mindmap_dir/$(eval $kak_opt_mindmap_dir_schema_cmd)"
 }}
 
-define-command mindmap-list -docstring %{
-    creates a buffer that lists all the notes under the current mindmap notes
+### Commands relying on external Perl scripts ###
+
+define-command -docstring %{
+    creates a buffer that lists all the notes under the current MindMap notes
     directory
 } mindmap-list %{ evaluate-commands -save-regs 'f' %{
 
     try %{ delete-buffer *mindmap-list* }
 
     evaluate-commands %sh{
-        fifo="$(mktemp -u)"
-        mkfifo "$fifo"
+        fifo_file="$(mktemp -u)"
+        mkfifo "$fifo_file"
 
-        perl_script="$kak_opt_mindmap_scripts_path/list.perl"
-        (env perl "$perl_script" "$kak_opt_mindmap_dir" > "$fifo") < /dev/null > /dev/null 2>&1 &
-        printf "set-register f '%s'" "$fifo"
+        relevant_perl_script="$kak_opt_mindmap_scripts_path/list.perl"
+        (env perl "$relevant_perl_script" "$kak_opt_mindmap_dir" \
+        > "$fifo_file") < /dev/null > /dev/null 2>&1 &
+
+        printf "set-register f '%s'" "$fifo_file"
     }
 
     edit -fifo %reg{f} -readonly *mindmap-list*
@@ -87,17 +97,14 @@ define-command mindmap-list -docstring %{
 
 define-command -hidden -docstring %{
     opens selected file entries in a *mindmap-list* buffer
-    buffer
 } mindmap-open %{
     evaluate-commands %{
-        execute-keys 'xs^(?S).*/<ret>'
+        # relies on the ID being considered a "word" and that it is always in
+        # the second column in the buffer
+        execute-keys 'ghlw<ret>'
         evaluate-commands %sh{
-            perl_script="$kak_opt_mindmap_scripts_path/open.perl"
-            export kak_opt_mindmap_dir
-            eval set -- "$kak_quoted_selections"
-            while [ $# -gt 0 ]; do
-                printf "$1\n"
-                shift
-            done | env perl "$perl_script"
+            relevant_perl_script="$kak_opt_mindmap_scripts_path/open.perl"
+            # 82 cols !!
+            env perl "$relevant_perl_script" "$kak_opt_mindmap_dir" $kak_selection
         }
 }}

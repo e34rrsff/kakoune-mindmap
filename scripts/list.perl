@@ -1,57 +1,59 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use File::Find::Rule;
+use File::Basename;
 
-# TODO: There may be some tuning I can apply to the script for better
-# performance; but in a test I did with a directory containing 10,000 generated
-# notes, it seems to perform about on par with grep + sed (under 0.5s on my
-# machine).
+# TODO: I'm preparing to make the script more usable manually
 
 my $notes_path = $ARGV[0];
 
 unless ($notes_path) {
-    print STDERR "error: missing ARGV[0] (path to notes)\n";
+    print STDERR "usage: list.perl <MindMap dir>\n";
     exit(1);
 }
 elsif (! -d $notes_path) {
-    print STDERR "error: ARGV[0] is not a valid directory path";
+    print STDERR "error: invalid directory path";
     exit(1);
 }
-elsif (substr($notes_path, -1) ne '/') {
-    $notes_path = $notes_path . '/'
-}
 
-# TODO: support UTF-8 for filenames
-my @files = glob("$notes_path*.adoc");
+# this regex looks for 10 digit IDs, which would break in like 2038 or
+# something
+my $filename_schema = (qr/\d{10}\.(a(scii)?doc|md)$/);
 
-sub paths_and_titles_from_files {
-    my (@file_paths) = @_;
-    my %notes_file_hash;
+File::Find::Rule
+    ->file()
+    ->name($filename_schema) 
+    ->exec(sub {
+               my $note_file = $_[2];
 
-    foreach (@file_paths) {
-        my $title = '';
-	if (-T $_) {
-	    if (open my $fh, '<:utf8', $_) {
-                while (my $line = <$fh>) {
-                    if ($line =~ /=\s+(.*)?$/) {
-                        $title = $1;
-                        last;
-                    }
-                }
-                close $fh;
-            }
-        }
-        else {
-            $title = "$!";
-        }
-	$notes_file_hash{"$_"} = "$title";
-    }
-    return %notes_file_hash;
-}
+               my ($note_id, $file_ext)  = $_[0] =~ /(.+)\.([^.]+)$/;
+               my $title = '';
 
-my %notes_listing = paths_and_titles_from_files(@files);
+               if (-T $note_file && open(my $fh, '<:utf8', $note_file)) {
 
-foreach my $path (reverse sort keys %notes_listing) {
-    my $file_id = do { $path =~ /(.*\/)+(.*)\.a(scii)?doc/; $2 };
-    print "$file_id/[$notes_listing{$path}]\n";
-}
+                   # feels odd placing this here... INEFFICIENCY (?)
+                   my $in_md_frontmatter = 0;
+                   while (my $line = <$fh>) {
+
+                       if ($file_ext =~ /a(scii)?doc/) {
+                           if ($line =~ /^=\s+(.*)$/) {
+                               $title = $1; last;
+                       }}
+                       elsif ($in_md_frontmatter == 1 or $file_ext eq 'md') {
+                           if ($line =~ /^---\s+.*$/) {
+                               $in_md_frontmatter += 1;
+                           };
+
+                           if ($in_md_frontmatter == 1) {
+                               if ($line =~ /^title:\s+(.*)$/) {
+                                   $title = $1; last;
+                       }}}
+                   } close $fh
+               } else { $title = "($!)"; }
+
+               print "[$note_id]" . ' ' . "$title\n";
+           })
+    ->in($notes_path);
+
+# TODO: handle notes with conflicting, duplicate IDs

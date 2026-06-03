@@ -2,14 +2,39 @@
 
 A Kakoune plugin/extension thing for managing a Zettelkasten / personal wiki / notes.
 
-I plan to write this following the methodologies and philosophies outlined here: https://zettelkasten.de/introduction/[Introduction to the Zettelkasten Method]
+I plan to write this following some of methodologies and philosophies outlined here: https://zettelkasten.de/introduction/[Introduction to the Zettelkasten Method]
 
 If you stumble upon this and feel inclined to, feel free to submit a PR.
 
-Also, softwrapping is recommended:
+==== Dependencies:
+
+* The `date` command
+* Perl
+
+=== Usage
+
+Read `mindmap.asciidoc`
+
+=== Ideas/Features List
+
+* [x] Quick note creation
+* [ ] Quickly moving between notes
+** [ ] Usable inline hyperlinks
+** [X] A buffer of a list of notes
+*** [ ] Sort notes
+*** [X] Fast shortcut / hitting enter to open note(s) under cursor(s)
+* [ ] Trashing
+** [ ] Quick notes deletion (with confirmation)
+** [ ] Trash in local notes directory
+** [ ] Trash to user's home trash
+* [X] Yearly/monthly/daily notes schema
+* [X] Multiple format support
+** [X] Asciidoc
+** [X] MarkDown
+
+Also, I would recommend you have softwrapping enabled in your `kakrc`:
 
 [source, kakscript]
 ----
 add-highlighter global/ wrap -word -indent
 ----
-

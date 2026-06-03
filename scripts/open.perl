@@ -1,24 +1,51 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use File::Find::Rule;
 
-# TODO: I know I'm inconsistently using forward slashes for directory paths in
-# variables, maybe I should do something about that.
-#
-# Also, maybe I should change the list script's behavior to be more like how
-# this one functions
-#
-# And also I'm not sure if this is properly handling STDIN, but it works
-my $input = <STDIN>;
-exit 0 unless defined $input;
+my $notes_path = $ARGV[0];
+my $note_id = $ARGV[1];
 
-my @fields = split(/\/\n/, $input);
-for my $file (@fields) {
-    if (-T "$ENV{'kak_opt_mindmap_dir'}/" . $file . ".adoc") {
-        print "edit \"$ENV{'kak_opt_mindmap_dir'}/$file.adoc\"\n";
-    }
-    else {
-        print "fail \"$ENV{'kak_opt_mindmap_dir'}/$file.adoc: $!\"\n";
-    }
+unless ($notes_path and $note_id ) {
+    print STDERR "usage: open.perl <MindMap dir> <note ID>\n";
+    exit(1); 
+} 
+elsif (! -d $notes_path) {
+    print STDERR "error: invalid directory path\n";
 }
 
+my $note_file_regex = qr/$note_id.(a(scii)?doc|md)/;
+my @matched_files;
+
+File::Find::Rule
+    ->file()
+    ->name($note_file_regex)
+    ->exec(sub {
+           my $path_to_note = $_[2];
+
+           push @matched_files, $path_to_note;
+
+           ##if (-R $path_to_note) {
+           ##    print "edit \"$path_to_note\"\n";
+           ##}
+           ##else {
+           ##    print "fail \"$path_to_note: $!\"\n";
+           ##}
+          })
+    ->in("$notes_path");
+
+my $n_found = scalar @matched_files;
+
+if ($n_found == 0) {
+    print "fail \"note not found for ID '$note_id'\"\n";
+}
+elsif ($n_found > 1) {
+    # TODO: test
+    print "fail \"duplicate IDs for ID '$note_id'\"\n";
+}
+elsif (-T $matched_files[0]) {
+    print "edit \"$matched_files[0]\"\n";
+}
+else {
+    print "fail \"note with ID '$note_id': $!\"\n";
+}

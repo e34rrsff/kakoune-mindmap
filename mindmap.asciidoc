@@ -1,31 +1,60 @@
 = Kakoune MindMap
 
-To use this plugin, "export" an environment variable available to your shell named `KAK_MINDMAP_DIR` and set it to some directory you like (i.e. ~/Documents/Notes) (and make sure it exists). 
+== Overview
 
-Notes will be searched for under `KAK_MINDMAP_DIR`, _flatly_ (no subdirectories will be checked). 
+To use this plugin, export an environment variable available in your
+shell, named `KAK_MINDMAP_DIR`, and set it to some directory you like
+(e.g. ~/Documents/Notes) (and make sure it exists). Notes will be created
+and searched for there.
 
-For any file you open, a hook checks to see if the directory the file is contained in contains another file named `.kakmindmap`. This is so that if you want other notes directories outside of `KAK_MINDMAP_DIR`, you can have them sourced without manually updating the environment variable or Kakoune option. Just create the .kakmindmap file in them.
+By default, the `mindmap_new_note_fmt` option is set to `md` for Markdown;
+but you can change this to `adoc`/`asciidoc` for AsciiDoc instead.
 
-Use <<mindmap-new-note,mindmap-new-note>> to quickly create a new note and <<mindmap-list,mindmap-list>> to go through a listing of your available notes.
+Really the only difference in behavior with these different file formats is
+how this plugin will try to find a title for the note: in Markdown it will
+use the value of the `title` field within the frontmatter; in AsciiDoc it's
+the first line found to begin with the equals sign.
 
-== Options
+For any `.md` or `.adoc`/`.asciidoc` file you open, a hook checks to see if
+another file named `.kakmindmap` happens to be exist in any of the current
+file's parent directories.
 
-These are accessible as options in Kakoune. (`%opt{<option_name_here>}`)
+If you want other "MindMaps" outside of `KAK_MINDMAP_DIR`, you can have them
+sourced without manually updating the environment variable or the Kakoune
+option. Just create the `.kakmindmap` file at the top-level of any other
+notes source locations.
 
-=== mindmap_dir
+By default, notes created with the `mindmap-new-note` command will be created
+under a directory structure that represents the date at which it was created:
+`YYYY/MMM/DD/`. The default note filename will be an ID in the form of UNIX
+time: `SSSSSSSSSS.(md/adoc/asciidoc)`. All notes should at least follow this
+filename convention for the plugin to be usable.
 
-`KAK_MINDMAP_DIR` is used to set this variable; it is equivalent to what you've set that to.
-
-=== mindmap_newnote_namer
-
-A shell command; of which, the output will be used as the file ID (before having `.adoc` appended). The default is "date +%s", which returns the current UNIX time. Any custom command should return a string that will be unique to new notes.
+This documentation also ignores commands and options which are largely
+irrelevant for simply using this plugin. You can check the docstrings in the
+source for the logic.
 
 == Commands
 
 === mindmap-list
 
-Creates a new buffer named `\*mindmap-list\*` which contains a list of `.adoc`/`.asciidoc` files and their titles, sourced from <<mindmap_dir,mindmap_dir>>. Any files on the same line as your cursor(s) will be opened like: `:edit <file_id>.adoc`, if you hit <ret>.
+Creates a new buffer named `\*mindmap-list\*` which contains the list of
+your notes with their titles. It also provides a shortcut to quickly open
+the note where your cursor's at, if you hit <ret>.
 
 === mindmap-new-note
 
-Quickly opens up a new buffer for a new note. If you want, specify a custom file name to override <<mindmap_newnote_namer,mindmap_newnote_namer>> (without the extension).
+Automatically creates for you a new note following the schema that originates
+from <<mindmap_dir_schema_cmd,mindmap_dir_schema_cmd>>.
+
+== Options
+
+=== mindmap_dir_schema_cmd
+
+This is a command that should provide a valid directory schema for notes to be
+created in. I.e. having slashes and valid directory names.
+
+=== mindmap_new_note_fmt
+
+Your preferred file format to be used when creating new notes. Basically just
+the file extension use in the generated filename.
