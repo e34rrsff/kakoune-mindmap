@@ -24,13 +24,6 @@ File::Find::Rule
            my $path_to_note = $_[2];
 
            push @matched_files, $path_to_note;
-
-           ##if (-R $path_to_note) {
-           ##    print "edit \"$path_to_note\"\n";
-           ##}
-           ##else {
-           ##    print "fail \"$path_to_note: $!\"\n";
-           ##}
           })
     ->in("$notes_path");
 

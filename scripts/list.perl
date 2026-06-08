@@ -4,8 +4,6 @@ use warnings;
 use File::Find::Rule;
 use File::Basename;
 
-# TODO: I'm preparing to make the script more usable manually
-
 my $notes_path = $ARGV[0];
 
 unless ($notes_path) {
@@ -13,7 +11,7 @@ unless ($notes_path) {
     exit(1);
 }
 elsif (! -d $notes_path) {
-    print STDERR "error: invalid directory path";
+    print STDERR "error: invalid directory path\n";
     exit(1);
 }
 
