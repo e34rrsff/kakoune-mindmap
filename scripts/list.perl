@@ -28,7 +28,7 @@ File::Find::Rule
                my $note_file = $_[2];
 
                my ($note_id, $file_ext)  = $_[0] =~ /(.+)\.([^.]+)$/;
-               my $title = '';
+               my $title = '(No Title)';
 
                if (-T $note_file && open(my $fh, '<:utf8', $note_file)) {
 
@@ -37,18 +37,18 @@ File::Find::Rule
                    while (my $line = <$fh>) {
 
                        if ($file_ext =~ /a(scii)?doc/) {
-                           if ($line =~ /^=\s+(.*)$/) {
+                           if ($line =~ /^=\s+(\S.+)$/) {
                                $title = $1; last;
                        }}
                        elsif ($in_md_frontmatter == 1 or $file_ext eq 'md') {
-                           if ($line =~ /^---\s+.*$/) {
+                           if ($in_md_frontmatter == 1) {
+                               if ($line =~ /^title:\s+(\S.+)$/) {
+                                   $title = $1; last;
+                           }}
+                           elsif ($line =~ /^---\s*$/) {
                                $in_md_frontmatter += 1;
                            };
-
-                           if ($in_md_frontmatter == 1) {
-                               if ($line =~ /^title:\s+(.*)$/) {
-                                   $title = $1; last;
-                       }}}
+                       }
                    } close $fh
                } else { $title = "($!)"; }
 
