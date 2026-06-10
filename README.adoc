@@ -20,17 +20,17 @@ Read `mindmap.asciidoc`
 * [x] Quick note creation
 * [ ] Quickly moving between notes
 ** [ ] Usable inline hyperlinks
-** [X] A buffer of a list of notes
+** [x] A buffer of a list of notes
 *** [ ] Sort notes
-*** [X] Fast shortcut / hitting enter to open note(s) under cursor(s)
+*** [x] Fast shortcut / hitting enter to open note(s) under cursor(s)
 * [ ] Trashing
 ** [ ] Quick notes deletion (with confirmation)
 ** [ ] Trash in local notes directory
 ** [ ] Trash to user's home trash
-* [X] Yearly/monthly/daily notes schema
-* [X] Multiple format support
-** [X] Asciidoc
-** [X] MarkDown
+* [x] Yearly/monthly/daily notes schema
+* [x] Multiple format support
+** [x] Asciidoc
+** [x] MarkDown
 
 Also, I would recommend you have softwrapping enabled in your `kakrc`:
 
