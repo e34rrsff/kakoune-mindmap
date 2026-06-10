@@ -45,6 +45,7 @@ hook global BufOpenFile .*\.a(scii)?doc mindmap-detect
 hook global BufNewFile .*\.a(scii)?doc mindmap-detect
 hook global BufOpenFile .*\.md mindmap-detect
 hook global BufNewFile .*\.md mindmap-detect
+hook global ClientCreate .* mindmap-detect
 
 define-command -docstring %{
     creates a new note
