@@ -1,18 +1,22 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+
 use File::Find::Rule;
-use File::Basename;
+
+# for module here, at ./lib/DryMindMap.pm
+use File::Basename qw(dirname);
+use lib dirname(File::Spec->rel2abs(__FILE__)) . '/lib';
+use DryMindMap;
 
 my $notes_path = $ARGV[0];
 
-unless ($notes_path) {
-    print STDERR "usage: list.perl <MindMap dir>\n";
-    exit(1);
+unless ($notes_path and
+        scalar @ARGV == 1) {
+    DryMindMap::err "usage: list.perl <MindMap dir>";
 }
 elsif (! -d $notes_path) {
-    print STDERR "error: invalid directory path\n";
-    exit(1);
+    DryMindMap::err "error: invalid directory path";
 }
 
 # this regex looks for 10 digit IDs, which would break in like 2038 or
